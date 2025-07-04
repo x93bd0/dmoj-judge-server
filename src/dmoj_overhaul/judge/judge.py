@@ -4,6 +4,7 @@ from ..problems import ProblemsManager
 from typing import Callable, Any
 from threading import Thread, Lock, Event
 from ..config import Config
+from ..types import Result
 from ..rc import load_fair, cpu_count
 from .worker import JudgeWorker, IPCMessage
 import logging
@@ -61,7 +62,12 @@ class Judge:
                         response[key] = value
                     self.pm.lazy_send_packet(response)
                 case "get-current-submission":
-                    raise NotImplementedError("get-current-submission packet")
+                    self.pm.lazy_send_packet(
+                        {
+                            "name": "current-submission-id",
+                            "submission-id": self.worker.submission.id,
+                        }
+                    )
                 case "submission-request":
                     self.pm.lazy_send_packet(
                         {
@@ -205,8 +211,37 @@ class Judge:
             ipc_ready_signal.set()
             self._grading_lock.release()
 
-    def _handle_result(self) -> None:
-        raise NotImplementedError("_handle_result")
+    def _handle_result(
+        self, batch_number: int | None, case_number: int, result: Result
+    ) -> None:
+        # TODO: Implement case info report
+        # TODO: Implement test case queue (for minimizing the number of messages to the server)
+        self.pm.lazy_send_packet(
+            {
+                "name": "test-case-status",
+                "submission-id": self.worker.submission.id,
+                "cases": [
+                    {
+                        "position": case_number,
+                        "status": result.result_flag,
+                        "time": result.execution_time,
+                        "points": result.points,
+                        "total-points": result.total_points,
+                        "memory": result.max_memory,
+                        "output": result.output,
+                        "extended-feedback": result.extended_feedback,
+                        "feedback": result.feedback,
+                        "voluntary-context-switches": result.context_switches[
+                            0
+                        ],
+                        "involuntary-context-switches": result.context_switches[
+                            1
+                        ],
+                        "runtime-version": result.runtime_version,
+                    }
+                ],
+            }
+        )
 
     def begin_grading(self, submission: Submission):
         self._grading_lock.acquire()
