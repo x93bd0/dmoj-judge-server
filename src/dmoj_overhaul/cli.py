@@ -178,7 +178,10 @@ def main() -> None:
     probm = ProblemsManager(config)
 
     pm = PacketManager(config)
-    pm.connect(probm.problems, {})
+    pm.connect(
+        probm.problems, {"PY3": [("python3", (3, 13, 3))]}
+    )  # TODO: For test purposes; change me!
+    pm.start()
 
     judge = Judge(config, pm, probm)
     judge.start()

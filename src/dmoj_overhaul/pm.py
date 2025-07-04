@@ -1,8 +1,8 @@
 from .types import Problems, Executors
 from typing import Any, TypeAlias
+from threading import Thread
 from .config import Config
 from queue import Queue
-import threading
 import logging
 import socket
 import struct
@@ -19,6 +19,7 @@ SIZE_PACKET = struct.Struct("!I")
 class PacketManager:
     config: Config
     _send_queue: Queue
+    _sender_handle: Thread | None
     _socket: socket.SocketType | None
 
     def __init__(self, config: Config):
@@ -30,6 +31,7 @@ class PacketManager:
             log.info("TLS not enabled.")
 
         self._send_queue = Queue()
+        self._sender_handle = None
         self._socket = None
 
     def connect(
@@ -68,6 +70,9 @@ class PacketManager:
         )
         self._handshake(problems, executors)
 
+    def lazy_send_packet(self, packet: Packet) -> None:
+        self._send_queue.put(packet)
+
     def send_packet(self, packet: Packet) -> None:
         assert self._socket is not None
         raw_packet: bytes = json.dumps(packet).encode("utf-8")
@@ -83,6 +88,15 @@ class PacketManager:
         cmp_packet: bytes = self._socket.recv(size_packet)
         raw_packet: bytes = zlib.decompress(cmp_packet)
         return json.loads(raw_packet)
+
+    def start(self) -> None:
+        self._sender_handle = Thread(target=self._sender_thread, daemon=True)
+        self._sender_handle.start()
+
+    def _sender_thread(self) -> None:
+        while True:
+            packet: Packet = self._send_queue.get()
+            self.send_packet(packet)
 
     def _handshake(
         self,

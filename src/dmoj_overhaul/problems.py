@@ -36,7 +36,10 @@ class ProblemsManager:
 
                 if problem in self.problems_dirs:
                     log.warning(
-                        f"Duplicate problem {problem} found at {problem_dir}, ignoring in favour of {self.problems_dirs[problem]}"
+                        "Duplicate problem %s found at %s, ignoring in favour of %s",
+                        problem,
+                        problem_dir,
+                        self.problems_dirs[problem],
                     )
                     continue
 

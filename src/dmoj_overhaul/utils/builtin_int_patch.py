@@ -1,3 +1,4 @@
+from typing import Self
 import builtins
 import sys
 
@@ -20,9 +21,7 @@ class patched_int_meta(type):
 
 
 class patched_int(builtin_int, metaclass=patched_int_meta):
-    def __new__(
-        cls: type[int | patched_int], s=0, *args, **kwargs
-    ) -> patched_int:
+    def __new__(cls: type[int], s=0, *args, **kwargs) -> Self:
         if isinstance(s, str) and len(s) > INT_MAX_DIGITS:
             raise ValueError("integer is too long")
         if cls is patched_int:
