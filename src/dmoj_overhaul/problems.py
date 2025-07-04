@@ -1,7 +1,11 @@
 from .config import Config
 from .types import Problems
+import logging
 import glob
 import os
+
+
+log = logging.getLogger(__name__)
 
 
 class ProblemsManager:
@@ -22,14 +26,18 @@ class ProblemsManager:
         self.problems_dirs = {}
 
         for dir_glob in self.config.problem_storage_globs:
-            for problem_config in glob.iglob(os.path.join(dir_glob, "init.yml"), recursive=True):
+            for problem_config in glob.iglob(
+                os.path.join(dir_glob, "init.yml"), recursive=True
+            ):
                 if not os.access(problem_config, os.R_OK):
                     continue
                 problem_dir: str = os.path.dirname(problem_config)
                 problem = os.path.basename(problem_dir)
 
                 if problem in self.problems_dirs:
-                    log.warning(f"Duplicate problem {problem} found at {problem_dir}, ignoring in favour of {problem_dirs[problem]}")
+                    log.warning(
+                        f"Duplicate problem {problem} found at {problem_dir}, ignoring in favour of {self.problems_dirs[problem]}"
+                    )
                     continue
 
                 self.problems_dirs[problem] = problem_dir

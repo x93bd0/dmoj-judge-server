@@ -32,7 +32,6 @@ class PacketManager:
         self._send_queue = Queue()
         self._socket = None
 
-    # TODO: Create types module to make problems list and executors list types more readable
     def connect(
         self,
         problems: Problems,
@@ -87,8 +86,8 @@ class PacketManager:
 
     def _handshake(
         self,
-        problems: list[tuple[str, float]],
-        executors: list[tuple[str, list[tuple[str, int]]]],
+        problems: Problems,
+        executors: Executors,
     ) -> None:
         self.send_packet(
             {

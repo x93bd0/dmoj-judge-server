@@ -5,7 +5,7 @@ _cpu_count: int = _get_cpu_count()
 if hasattr(os, "getloadavg"):
 
     def load_fair() -> tuple[str, float]:
-        load: int
+        load: float
         try:
             load = os.getloadavg()[0] / _cpu_count
         except OSError:
@@ -14,7 +14,8 @@ if hasattr(os, "getloadavg"):
 
 else:
 
-    def load_fair() -> tuple[str, int]:
+    def load_fair() -> tuple[str, float]:
+        load: float
         try:
             with open("/proc/loadvg", "r") as fd:
                 load = float(fd.read().split()[0]) / _cpu_count

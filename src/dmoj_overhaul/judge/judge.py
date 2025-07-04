@@ -1,7 +1,7 @@
 from ..pm import PacketManager, Packet
 from ..types import Submission
 from ..problems import ProblemsManager
-from typing import Callable
+from typing import Callable, Any
 from threading import Thread
 from ..config import Config
 from ..rc import load_fair, cpu_count
@@ -17,7 +17,7 @@ class Judge:
     probm: ProblemsManager
 
     config: Config
-    report_callbacks: list[Callable[[], tuple[str, str]]]
+    report_callbacks: list[Callable[[], tuple[str, Any]]]
 
     _receiver_handle: Thread | None
 
