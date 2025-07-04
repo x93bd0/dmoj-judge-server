@@ -1,0 +1,37 @@
+[project]
+name = "dmoj_overhaul"
+version = "0.0.1"
+
+dependencies = [
+  "pyyaml"
+]
+
+authors = [
+  { name = "Boris Martinez", email = "x93bd0@gmail.com" }
+]
+
+description = ""  # TODO
+readme = "README.md"
+
+requires-python = ">=3.9"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent"  # TODO: Maybe Unix-only?
+]
+
+license = "MIT"
+license-files = ["LICEN[CS]E"]
+
+[project.scripts]
+dmoj-cli = "dmoj_overhaul:cli.main"
+
+[project.urls]
+Homepage = "https://github.com/x93bd0/dmoj-judge-server"
+Issues = "https://github.com/x93bd0/dmoj-judge-server/issues"
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[tool.black]
+line-length = 80
