@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Any
 import logging
 
 
@@ -37,8 +38,8 @@ class ProblemConfig:
     wall_time_factor: int = 3
     output_prefix_length: int = 0
     output_limit_length: int = 25165824
-    binary_data: False
-    short_circuit: True
+    binary_data: bool = False
+    short_circuit: bool = True
     dependencies: list = field(default_factory=list)
     points: int = 1
     symlinks: dict = field(default_factory=dict)

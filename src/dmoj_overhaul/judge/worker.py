@@ -1,6 +1,6 @@
 from multiprocessing.connection import Connection
 from multiprocessing import Process, Pipe
-from .types import Submission
+from ..types import Submission
 from enum import Enum, auto
 from typing import Generator
 import logging
