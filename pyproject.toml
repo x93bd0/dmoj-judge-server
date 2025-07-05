@@ -35,3 +35,6 @@ build-backend = "hatchling.build"
 
 [tool.black]
 line-length = 80
+
+[tool.mypy]
+disable_error_code = ["union-attr"]

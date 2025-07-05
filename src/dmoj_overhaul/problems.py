@@ -1,4 +1,5 @@
 from .config import Config
+from .problem import Problem
 from .types import Problems
 import logging
 import glob
@@ -45,3 +46,6 @@ class ProblemsManager:
 
                 self.problems_dirs[problem] = problem_dir
                 self.problems.append((problem, os.path.getmtime(problem_dir)))
+
+    def load_problem(self, id: str) -> Problem:
+        return {}

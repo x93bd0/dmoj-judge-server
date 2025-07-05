@@ -4,6 +4,7 @@ import logging
 
 
 # TODO: Consider adding a root logger property for doing root_logger.getChild('pkg')
+# TODO: Implement type checker
 # TODO: Add API flags
 @dataclass
 class Config:
@@ -26,6 +27,27 @@ class Config:
     do_self_tests: bool = True
     ssl_enabled: bool = False
     watchdog: bool = True
+
+
+# TODO: Maybe refactor this as PerExecutorConfig rather than AllExecutorsConfig?
+@dataclass
+class ExecutorConfig:
+    selftest_time_limit: int = 10
+    selftest_memory_limit: int = 131072
+    generator_compile_time_limit: int = 30
+    generator_time_limit: float = 20.0
+    generator_memory_limit: int = 524288
+    validator_compiler_time_limit: float = 30.0
+    validator_time_limit: float = 20.0
+    validator_memory_limit: int = 524288
+    compiler_time_limit: float = 10.0
+    compiler_size_limit: int = 131072
+    compiler_output_character_limit: int = 65536
+    compiled_binary_cache_dir: str | None = None
+    compiled_binary_cache_size: int = 100
+    runtime: dict[str, Any] = field(default_factory=dict)
+    temp_directory: str = "/tmp/"
+    submission_cpu_affinity: list[int] | None = None
 
 
 # FIXME: This wasn't tested nor investigated enough, so I can't ensure every

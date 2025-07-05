@@ -49,8 +49,8 @@ class Result:
 
     @property
     def main_code(self) -> int:
-        for kind, obj in ResultKind:
-            code: int = obj.value[0]
+        for kind in ResultKind:
+            code: int = kind.value[0]
             if self.result_flag & code:
                 return code
         return ResultKind.AC.value[0]
@@ -58,8 +58,8 @@ class Result:
     @property
     def readable_codes(self) -> list[str]:
         execution_verdict: list[str] = []
-        for kind, obj in ResultKind:
-            if self.result_flag & obj.value[0]:
+        for kind in ResultKind:
+            if self.result_flag & kind.value[0]:
                 execution_verdict.append(kind.name)
         return execution_verdict
 

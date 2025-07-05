@@ -2,6 +2,7 @@ from multiprocessing.connection import Connection
 from multiprocessing import Process, Pipe
 from typing import Generator, Any
 from ..types import Submission
+from ..problem import Problem
 from threading import Thread
 from enum import Enum, auto
 import traceback
@@ -33,16 +34,19 @@ class IPCMessage(Enum):
 
 class JudgeWorker:
     submission: Submission
+    problem: Problem
     process: Process | None
-    _conn: Connection
+    _conn: Connection | None
 
-    def __init__(self, submission: Submission) -> None:
+    def __init__(self, submission: Submission, problem: Problem) -> None:
         self.submission = submission
+        self.problem = problem
         self.process = None
+        self._conn = None
 
     def start(self) -> None:
         assert self.process is None
-        handler = WorkerHandler(self.submission)
+        handler = WorkerHandler(self.submission, self.problem)
         self._conn, child_conn = Pipe()
         self.process = Process(
             name="DMOJ Judge Handler for %s/%d"
@@ -96,10 +100,12 @@ class JudgeWorker:
 
 class WorkerHandler:
     submission: Submission
+    problem: Problem
     _aborted: bool
 
-    def __init__(self, submission: Submission):
+    def __init__(self, submission: Submission, problem: Problem):
         self.submission = submission
+        self.problem = problem
         self._aborted = False
 
     @staticmethod
@@ -158,4 +164,8 @@ class WorkerHandler:
             pass
 
     def grade_cases(self) -> Generator[tuple[IPCMessage, tuple], None, None]:
-        raise NotImplementedError("grade-cases")
+        # TODO: Get grader
+        yield IPCMessage.GRADING_BEGIN, (False,)
+        # yield IPCMessage.GRADING_BEGIN, (self.problem.pretests_only)
+
+        yield IPCMessage.GRADING_END, ()

@@ -110,7 +110,6 @@ class Judge:
     def _grading_thread(self, ipc_ready_signal: Event) -> None:
         assert self.worker is not None
         submission_id: int = self.worker.submission.id
-        batch: int = 0
 
         try:
             # TODO: Better logging
@@ -155,7 +154,6 @@ class Judge:
                             }
                         )
                     case IPCMessage.BATCH_BEGIN:
-                        batch += 1
                         self.pm.lazy_send_packet(
                             {
                                 "name": "batch-begin",
@@ -192,7 +190,9 @@ class Judge:
                             % msg_data[0]
                         )
                     case IPCMessage.RESULT:
-                        self._handle_result(msg_data[0])
+                        self._handle_result(
+                            msg_data[0], msg_data[1], msg_data[2]
+                        )
 
             log.info(
                 "Done grading [%s]/[%s]",
@@ -254,7 +254,9 @@ class Judge:
             submission.language,
         )
 
-        self.worker = JudgeWorker(submission)
+        self.worker = JudgeWorker(
+            submission, self.probm.load_problem(submission.problem_id)
+        )
         self.worker.start()
 
         ipc_ready_signal = Event()

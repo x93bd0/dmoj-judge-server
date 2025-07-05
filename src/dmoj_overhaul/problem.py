@@ -3,14 +3,21 @@ from dataclasses import dataclass
 from .config import ProblemConfig
 
 
+# FIXME: No init?
 class Problem:
     id: str
     time_limit: float
     memory_limit: int
+    # TODO: unpack and toss
     meta: dict[str, Any]
 
     root_dir: str
     config: ProblemConfig
+    pretests_only: int
+
+    @property
+    def grader_class(self) -> Any:
+        raise NotImplementedError("Problem.grader_class")
 
 
 @dataclass
