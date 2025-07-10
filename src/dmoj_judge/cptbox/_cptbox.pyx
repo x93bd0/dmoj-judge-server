@@ -18,7 +18,7 @@ __all__ = ['Process', 'Debugger', 'bsd_get_proc_cwd', 'bsd_get_proc_fdno', 'MAX_
            'PTBOX_SPAWN_FAIL_EXECVE', 'PTBOX_SPAWN_FAIL_SETAFFINITY']
 
 
-cdef extern from 'ptbox.h' nogil:
+cdef extern from 'ptbox/ptbox.h' nogil:
     # Cross-platform extern
     long ptrace_traceme()
 

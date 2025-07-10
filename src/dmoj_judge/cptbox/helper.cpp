@@ -1,5 +1,5 @@
 #include "helper.h"
-#include "ptbox.h"
+#include "ptbox/ptbox.h"
 
 #include <dirent.h>
 #include <errno.h>

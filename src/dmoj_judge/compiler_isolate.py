@@ -13,7 +13,7 @@ from .handlers import ACCESS_EFAULT, ACCESS_EPERM, ALLOW
 from .isolate import DeniedSyscall, FilesystemSyscallKind, IsolateTracer
 from .syscalls import *
 from .tracer import AdvancedDebugger
-from ..executors.filesystem import Filesystem
+from dmoj.executors.base_executor import BASE_FILESYSTEM, BASE_WRITE_FILESYSTEM
 
 
 UTIME_OMIT = (1 << 30) - 2
@@ -27,13 +27,12 @@ class CompilerIsolateTracer(IsolateTracer):
         read_fs: List[FilesystemAccessRule],
         write_fs: List[FilesystemAccessRule],
     ):
-        base_fs = Filesystem.default()
-        read_fs += base_fs.read + [
+        read_fs += BASE_FILESYSTEM + [
             RecursiveDir(tmpdir),
             ExactFile("/bin/strip"),
             RecursiveDir("/usr/x86_64-linux-gnu"),
         ]
-        write_fs += base_fs.write + [RecursiveDir(tmpdir)]
+        write_fs += BASE_WRITE_FILESYSTEM + [RecursiveDir(tmpdir)]
         super().__init__(read_fs=read_fs, write_fs=write_fs)
 
         self.update(

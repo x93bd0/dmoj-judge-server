@@ -1,19 +1,14 @@
 [project]
-name = "dmoj_overhaul"
+name = "dmoj_judge"
 version = "0.0.1"
-
-dependencies = [
-  "pyyaml"
-]
+description = ""  # TODO
+readme = "README.md"
+requires-python = ">=3.9"
 
 authors = [
   { name = "Boris Martinez", email = "x93bd0@gmail.com" }
 ]
 
-description = ""  # TODO
-readme = "README.md"
-
-requires-python = ">=3.9"
 classifiers = [
   "Programming Language :: Python :: 3",
   "Operating System :: OS Independent"  # TODO: Maybe Unix-only?
@@ -22,16 +17,20 @@ classifiers = [
 license = "MIT"
 license-files = ["LICEN[CS]E"]
 
+dependencies = [
+    "pyyaml>=6.0.2",
+]
+
 [project.scripts]
-dmoj-cli = "dmoj_overhaul:cli.main"
+dmoj-cli = "dmoj_judge:cli.main"
 
 [project.urls]
 Homepage = "https://github.com/x93bd0/dmoj-judge-server"
 Issues = "https://github.com/x93bd0/dmoj-judge-server/issues"
 
 [build-system]
-requires = ["hatchling >= 1.26"]
-build-backend = "hatchling.build"
+requires = ["setuptools", "setuptools-scm", "cython"]
+build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 80

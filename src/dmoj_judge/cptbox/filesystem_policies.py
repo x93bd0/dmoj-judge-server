@@ -27,7 +27,9 @@ class File:
 class BaseFilesystemAccessRule:
     def __init__(self, path: str):
         path = os.path.expanduser(path)
-        assert os.path.abspath(path) == path, 'FilesystemAccessRule must specify a normalized, absolute path to rule'
+        assert (
+            os.path.abspath(path) == path
+        ), "FilesystemAccessRule must specify a normalized, absolute path to rule"
         self.path = path
         self._assert_rule_type()
 
@@ -45,10 +47,12 @@ class BaseFilesystemAccessRule:
         return os.path.realpath(self.path)
 
     def is_realpath(self) -> bool:
-        return self.path.startswith('/proc/self') or self.realpath() == self.path  # proc/self should not be resolved
+        return (
+            self.path.startswith("/proc/self") or self.realpath() == self.path
+        )  # proc/self should not be resolved
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.__name__} {self.path}>'
+        return f"<{self.__class__.__name__} {self.path}>"
 
 
 class ExactFile(BaseFilesystemAccessRule):
@@ -58,7 +62,9 @@ class ExactFile(BaseFilesystemAccessRule):
 
 class DirFilesystemAccessRule(BaseFilesystemAccessRule):
     def _assert_dir_type(self, is_dir: bool) -> None:
-        assert is_dir, f"Can't apply directory rule to non-directory {self.path}"
+        assert (
+            is_dir
+        ), f"Can't apply directory rule to non-directory {self.path}"
 
 
 class ExactDir(DirFilesystemAccessRule):
@@ -83,15 +89,17 @@ class FilesystemPolicy:
         if not rule.exists():
             return
 
-        if rule.path == '/':
+        if rule.path == "/":
             return self._finalize_root_rule(rule)
 
-        *directory_path, final_component = rule.path.split('/')[1:]
+        *directory_path, final_component = rule.path.split("/")[1:]
 
         node = self.root
         for component in directory_path:
             new_node = node.subpath_map.setdefault(component, Dir())
-            assert isinstance(new_node, Dir), 'Cannot add rule: refusing to descend into non-directory'
+            assert isinstance(
+                new_node, Dir
+            ), "Cannot add rule: refusing to descend into non-directory"
             node = new_node
 
         self._finalize_rule(node, final_component, rule)
@@ -101,28 +109,38 @@ class FilesystemPolicy:
             self._add_rule(type(rule)(rule.realpath()))
 
     def _finalize_root_rule(self, rule: FilesystemAccessRule) -> None:
-        assert not isinstance(rule, ExactFile), 'Root is not a file'
+        assert not isinstance(rule, ExactFile), "Root is not a file"
         self._finalize_directory_rule(self.root, rule)
 
-    def _finalize_rule(self, node: Dir, final_component: str, rule: FilesystemAccessRule) -> None:
-        assert final_component != '', 'Must not have trailing slashes in rule path'
+    def _finalize_rule(
+        self, node: Dir, final_component: str, rule: FilesystemAccessRule
+    ) -> None:
+        assert (
+            final_component != ""
+        ), "Must not have trailing slashes in rule path"
         if isinstance(rule, ExactFile):
             new_node = node.subpath_map.setdefault(final_component, File())
-            assert isinstance(new_node, File), "Can't add ExactFile: Dir rule exists"
+            assert isinstance(
+                new_node, File
+            ), "Can't add ExactFile: Dir rule exists"
         else:
             new_node = node.subpath_map.setdefault(final_component, Dir())
             assert isinstance(new_node, Dir), "Can't add rule: File rule exists"
             self._finalize_directory_rule(new_node, rule)
 
-    def _finalize_directory_rule(self, node: Dir, rule: Union[ExactDir, RecursiveDir]) -> None:
+    def _finalize_directory_rule(
+        self, node: Dir, rule: Union[ExactDir, RecursiveDir]
+    ) -> None:
         node.access_mode = AccessMode.more_permissive(
             node.access_mode, rule.access_mode
         )  # Allow the more permissive rule
 
     # `path` should be a normalized path
     def check(self, path: str) -> bool:
-        assert os.path.abspath(path) == path, f'Must pass a normalized, absolute path to check: passed {path}'
-        components = [] if path == '/' else path.split('/')[1:]
+        assert (
+            os.path.abspath(path) == path
+        ), f"Must pass a normalized, absolute path to check: passed {path}"
+        components = [] if path == "/" else path.split("/")[1:]
 
         node = self.root
         for component in components:

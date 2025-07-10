@@ -9,7 +9,12 @@ import threading
 from typing import Callable, List, Mapping, Optional, Tuple, Type
 
 from ._cptbox import *
-from .handlers import ALLOW, DISALLOW, ErrnoHandlerCallback, _CALLBACK
+from .handlers import (
+    ALLOW,
+    DISALLOW,
+    ErrnoHandlerCallback,
+    _CALLBACK,
+)
 from .syscalls import (
     SYSCALL_COUNT,
     by_id,
@@ -19,13 +24,13 @@ from .syscalls import (
     sys_getpid,
     translator,
 )
-from ..utils.communicate import safe_communicate as _safe_communicate
-from ..utils.os_ext import OOM_SCORE_ADJ_MAX, oom_score_adj
-from ..utils.unicode import utf8bytes, utf8text
+from .utils.communicate import safe_communicate as _safe_communicate
+from .utils.os_ext import OOM_SCORE_ADJ_MAX, oom_score_adj
+from .utils.unicode import utf8bytes, utf8text
 
 PIPE = subprocess.PIPE
 STDOUT = subprocess.STDOUT
-log = logging.getLogger("dmoj.cptbox")
+log = logging.getLogger("")
 
 _PIPE_BUF = getattr(select, "PIPE_BUF", 512)
 _SYSCALL_INDICIES: List[Optional[int]] = [None] * PTBOX_ABI_COUNT

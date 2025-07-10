@@ -136,3 +136,10 @@ class PacketManager:
                 raise Exception(
                     "Couldn't authenticate (TODO: Replace with a more specific exception)"
                 )
+
+        # TODO: Better log string
+        log.info(
+            "Done handshake without errors: [%s]:%s",
+            self.config.server_host,
+            self.config.server_port,
+        )

@@ -18,7 +18,7 @@ from .handlers import (
 from .syscalls import *
 from .syscalls import by_id
 from .tracer import HandlerCallback, MaxLengthExceeded
-from ..utils.unicode import utf8text
+from .utils.unicode import utf8text
 
 log = logging.getLogger("dmoj.security")
 open_write_flags = [os.O_WRONLY, os.O_RDWR, os.O_TRUNC, os.O_CREAT, os.O_EXCL]
