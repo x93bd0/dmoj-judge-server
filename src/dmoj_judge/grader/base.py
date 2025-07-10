@@ -1,0 +1,38 @@
+from abc import ABCMeta, abstractmethod
+from ..executors.base import BaseExecutor
+from ..cptbox import TracedPopen
+from ..problem import Problem, TestCase
+from ..types import Result
+
+
+class BaseGrader(ABCMeta):
+    source: bytes
+    problem: Problem
+    executor_type: type[BaseExecutor]
+    executor: BaseExecutor
+    _current_process: TracedPopen | None
+
+    def __init__(self, source: bytes, language: str, problem: Problem) -> None:
+        self.source = source
+        self.language = language
+        self.problem = problem
+        self.binary = self._create_executor()
+        self._abort_requested = False
+        self._current_process = None
+
+    @abstractmethod
+    def grade(self, case: TestCase) -> Result:
+        raise NotImplementedError
+
+    @abstractmethod
+    def _create_executor(self) -> BaseExecutor:
+        raise NotImplementedError
+
+    def abort_grading(self) -> None:
+        self._abort_requested = True
+        if self._current_process:
+            try:
+                self._current_process.kill()
+            except OSError:
+                # TODO: Wait, it just returns? No logging?
+                pass

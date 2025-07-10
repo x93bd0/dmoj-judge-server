@@ -72,6 +72,10 @@ class ProblemConfig(BaseConfig):
     pretest_test_cases: list[Any] | dict[str, Any] | None = None
     test_cases: list[Any] | dict[str, Any] | None = None
 
+    # TODO: Should this belong here?
+    hints: list[str] = field(default_factory=list)
+    checker: str = "standard"
+
     wall_time_factor: int = 3
     output_prefix_length: int = 0
     output_limit_length: int = 25165824

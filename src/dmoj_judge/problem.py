@@ -78,7 +78,9 @@ class Problem:
         self.memory_limit = memory_limit
         self.meta = meta
         self.config = config
+
         self._batch_counter = 0
+        self._testcase_counter = 0
 
         self.pretests_only = self.meta.get("pretests_only", False)
         if not self._resolve_testcases():
@@ -171,6 +173,15 @@ class Problem:
     def grader_class(self) -> Any:
         raise NotImplementedError("Problem.grader_class")
 
+    def __repr__(self) -> str:
+        return (
+            "Problem("
+            + f'id="{self.id}", '
+            + f"time_limit={self.time_limit}, "
+            + f"memory_limit={self.memory_limit}, "
+            + f"pretests_only={self.pretests_only}, ...)"
+        )
+
 
 @dataclass
 class BaseTestCase:
@@ -189,6 +200,9 @@ class BatchedTestCase(BaseTestCase):
     # TODO: typing
     dependencies: list[int]
 
+    def __repr__(self) -> str:
+        return f"BatchedTestCase(cases={self.cases})"
+
 
 @dataclass
 class TestCase(BaseTestCase):
@@ -196,3 +210,11 @@ class TestCase(BaseTestCase):
     batch: int
     output_prefix_length: int
     has_binary_data: bool
+
+    def __repr__(self) -> str:
+        return (
+            "TestCase("
+            + f'in="{self.config._in}", '
+            + f'out="{self.config.out}", '
+            + f"points={self.config.points})"
+        )

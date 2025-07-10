@@ -255,7 +255,13 @@ class Judge:
         )
 
         self.worker = JudgeWorker(
-            submission, self.probm.load_problem(submission.problem_id)
+            submission,
+            self.probm.load_problem(
+                submission.problem_id,
+                time_limit=submission.time_limit,
+                memory_limit=submission.memory_limit,
+                meta=submission.meta,
+            ),
         )
         self.worker.start()
 
