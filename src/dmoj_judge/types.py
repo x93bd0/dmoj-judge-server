@@ -35,7 +35,7 @@ class ResultKind(Enum):
 
 @dataclass
 class Result:
-    case: "TestCase"
+    case: "dmoj_judge.problem.TestCase"
     result_flag: int = 0
     execution_time: float = 0
     wall_clock_time: float = 0

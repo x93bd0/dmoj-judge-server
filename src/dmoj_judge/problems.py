@@ -1,7 +1,14 @@
-from .config import Config
-from .problem import Problem
+from .problem import Problem, ProblemDataManager
+from .config import Config, ProblemConfig
+from .errors import InvalidInitException
 from .types import Problems
+
+from yaml.parser import ParserError
+from yaml.scanner import ScannerError
+from typing import Any
+import zipfile
 import logging
+import yaml
 import glob
 import os
 
@@ -19,9 +26,12 @@ class ProblemsManager:
 
     def __init__(self, config: Config):
         self.config = config
-        self.reload_problems()
+        self.load_problems()
 
-    def reload_problems(self) -> None:
+    def get_problem_root(self, id: str) -> str:
+        return self.problems_dirs[id]
+
+    def load_problems(self) -> None:
         assert self.config.problem_storage_globs
         self.problems = []
         self.problems_dirs = {}
@@ -47,5 +57,51 @@ class ProblemsManager:
                 self.problems_dirs[problem] = problem_dir
                 self.problems.append((problem, os.path.getmtime(problem_dir)))
 
-    def load_problem(self, id: str) -> Problem:
-        return {}
+    def load_problem(
+        self,
+        id: str,
+        time_limit: float = 0,
+        memory_limit: int = 0,
+        meta: dict[str, Any] | None = None,
+    ) -> Problem:
+        if not meta:
+            meta = {}
+
+        dmanager = ProblemDataManager(self.get_problem_root(id))
+        try:
+            init: dict[str, Any] | Any = yaml.safe_load(dmanager["init.yml"])
+            if not init:
+                raise InvalidInitException(
+                    "`init.yml` file of problem `%s` is empty" % (id,)
+                )
+            assert isinstance(init, dict)
+        except (
+            IOError,
+            KeyError,
+            ParserError,
+            ScannerError,
+            AssertionError,
+        ) as e:
+            raise InvalidInitException.from_exception(e)
+
+        config = ProblemConfig(**init)
+        if config.archive:
+            archive_path: str = os.path.join(dmanager.root_path, config.archive)
+            if not os.path.exists(archive_path):
+                raise InvalidInitException(
+                    "archive file `%s` doesn't exist" % (archive_path,)
+                )
+
+            try:
+                dmanager.archive = zipfile.ZipFile(archive_path)
+            except zipfile.BadZipFile as e:
+                raise InvalidInitException.from_exception(e)
+
+        return Problem(
+            id=id,
+            time_limit=time_limit,
+            memory_limit=memory_limit,
+            meta=meta,
+            config=config,
+            data_manager=dmanager,
+        )

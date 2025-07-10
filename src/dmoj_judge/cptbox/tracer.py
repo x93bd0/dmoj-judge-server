@@ -24,9 +24,9 @@ from .syscalls import (
     sys_getpid,
     translator,
 )
-from .utils.communicate import safe_communicate as _safe_communicate
-from .utils.os_ext import OOM_SCORE_ADJ_MAX, oom_score_adj
-from .utils.unicode import utf8bytes, utf8text
+from ._utils.communicate import safe_communicate as _safe_communicate
+from ._utils.os_ext import OOM_SCORE_ADJ_MAX, oom_score_adj
+from ._utils.unicode import utf8bytes, utf8text
 
 PIPE = subprocess.PIPE
 STDOUT = subprocess.STDOUT

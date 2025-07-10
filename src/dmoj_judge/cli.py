@@ -161,13 +161,20 @@ def main() -> None:
         action="store_true",
         help="skip executor self-tests",
     )
+    parser.add_argument(
+        "--no-install-int-patch",
+        action="store_true",
+        help="don't patch Python int object (Not recommended!)",
+    )
 
     args = parser.parse_args()
+    if not args.no_install_int_patch:
+        install_int_patch()
+
     config: Config = load_configuration(args)
     del parser, args
 
     # TODO: unicode_stdout_stderr
-    install_int_patch()
     logging.basicConfig(
         filename=config.log_file,
         level=config.log_level,

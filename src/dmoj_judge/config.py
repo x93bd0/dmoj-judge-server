@@ -1,13 +1,18 @@
 from dataclasses import dataclass, field
+from .enums import BuiltInGraders
 from typing import Any
 import logging
+
+
+class BaseConfig:
+    pass
 
 
 # TODO: Consider adding a root logger property for doing root_logger.getChild('pkg')
 # TODO: Implement type checker
 # TODO: Add API flags
 @dataclass
-class Config:
+class Config(BaseConfig):
     server_host: str
     server_port: int
     judge_name: str
@@ -31,7 +36,7 @@ class Config:
 
 # TODO: Maybe refactor this as PerExecutorConfig rather than AllExecutorsConfig?
 @dataclass
-class ExecutorConfig:
+class ExecutorConfig(BaseConfig):
     selftest_time_limit: int = 10
     selftest_memory_limit: int = 131072
     generator_compile_time_limit: int = 30
@@ -54,14 +59,43 @@ class ExecutorConfig:
 #         ProblemConfig can fit this schema the way the original DMOJ devs
 #         intended.
 @dataclass
-class ProblemConfig:
-    meta: dict[str, Any]
+class ProblemConfig(BaseConfig):
+    # TODO: Add checker field
+    # TODO: Find a more "elegant" way of passing down the grader configuraiton
+    archive: str | None = None
+    grader: str = BuiltInGraders.STANDARD.value
+    grader_config: dict[str, Any] = field(default_factory=dict)
+
+    # TODO: Couldn't this be replaced by a more sophisticated test case logic?
+    #        (dunno, just ideas)
+    # TODO: typing
+    pretest_test_cases: list[Any] | dict[str, Any] | None = None
+    test_cases: list[Any] | dict[str, Any] | None = None
 
     wall_time_factor: int = 3
     output_prefix_length: int = 0
     output_limit_length: int = 25165824
     binary_data: bool = False
     short_circuit: bool = True
+    # TODO: typing
     dependencies: list = field(default_factory=list)
     points: int = 1
+    # TODO: typing
     symlinks: dict = field(default_factory=dict)
+    meta: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class BatchedTestCaseConfig(BaseConfig):
+    batched: list[dict[str, Any]]
+    points: int = 0
+    dependencies: list = field(default_factory=list)
+
+
+@dataclass
+class TestCaseConfig(BaseConfig):
+    _in: str | None = None
+    out: str | None = None
+    points: int = 0
+    output_prefix_length: int = 0
+    has_binary_data: bool = False
