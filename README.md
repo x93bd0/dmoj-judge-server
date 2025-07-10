@@ -8,7 +8,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/x93bd0/dmoj-judge-server">
-    <img src="https://github.com/DMOJ/online-judge/raw/master/logo.png?raw=true">
+    <img src="https://github.com/DMOJ/online-judge/raw/master/logo.png?raw=true" width="120px">
   </a>
 
   <h3 align="center">DMOJ-Judge</h3>
