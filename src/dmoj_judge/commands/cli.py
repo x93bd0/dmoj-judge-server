@@ -1,8 +1,9 @@
-from .utils.builtin_int_patch import install as install_int_patch
-from .problems import ProblemsManager
-from .pm import PacketManager
-from .config import Config
-from .judge import Judge
+from ..utils.builtin_int_patch import install as install_int_patch
+from ..problems import ProblemManager
+from ..graders import GraderManager
+from ..pm import PacketManager
+from ..config import Config
+from ..judge import Judge
 
 from typing import Any
 import argparse
@@ -40,10 +41,7 @@ def load_configuration(args: argparse.Namespace) -> Config:
         load_argument(args, config_dict, "judge_key"),
     )
 
-    for key, value in config_dict.items():
-        getattr(config, key)  # Used for avoiding non-present fields
-        setattr(config, key, value)
-
+    config.load_dict(config_dict)
     if args.log_file:
         config.log_file = args.log_file
 
@@ -182,7 +180,8 @@ def main() -> None:
     )
 
     # TODO: setproctitle
-    probm = ProblemsManager(config)
+    graders = GraderManager(config.graders)
+    probm = ProblemManager(config)
 
     pm = PacketManager(config)
     pm.connect(

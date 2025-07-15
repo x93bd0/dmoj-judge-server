@@ -1,24 +1,6 @@
-from typing import NamedTuple, TypeAlias, Any
-from dataclasses import dataclass
 from enum import Enum
-
-
-Submission = NamedTuple(
-    "Submission",
-    [
-        ("id", int),
-        ("problem_id", str),
-        ("language", str),
-        ("source", str),
-        ("time_limit", float),
-        ("memory_limit", int),
-        ("short_circuit", bool),
-        ("meta", dict[str, Any]),
-    ],
-)
-
-Problems: TypeAlias = list[tuple[str, float]]
-Executors: TypeAlias = dict[str, list[tuple[str, tuple[int, ...]]]]
+from dataclasses import dataclass
+import dmoj_judge
 
 
 class ResultKind(Enum):
@@ -77,3 +59,7 @@ class Result:
     def feedback(self) -> str:
         # FIXME: Uninmplemented; dummy.
         return self.feedback
+
+
+class CheckerResult:
+    pass

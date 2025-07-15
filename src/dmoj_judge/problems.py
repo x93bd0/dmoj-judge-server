@@ -1,7 +1,6 @@
-from .problem import Problem, ProblemDataManager
+from .types import Problems, Problem, ProblemDataManager
 from .config import Config, ProblemConfig
-from .errors import InvalidInitException
-from .types import Problems
+from .errors import InvalidInitError
 
 from yaml.parser import ParserError
 from yaml.scanner import ScannerError
@@ -16,7 +15,7 @@ import os
 log = logging.getLogger(__name__)
 
 
-class ProblemsManager:
+class ProblemManager:
     config: Config
     # TODO: Maybe add a cached approach instead? (or keep both, though
     #         realistically, it is almost impossible to reach an MLE with
@@ -71,7 +70,7 @@ class ProblemsManager:
         try:
             init: dict[str, Any] | Any = yaml.safe_load(dmanager["init.yml"])
             if not init:
-                raise InvalidInitException(
+                raise InvalidInitError(
                     "`init.yml` file of problem `%s` is empty" % (id,)
                 )
             assert isinstance(init, dict)
@@ -82,20 +81,20 @@ class ProblemsManager:
             ScannerError,
             AssertionError,
         ) as e:
-            raise InvalidInitException.from_exception(e)
+            raise InvalidInitError.from_exception(e)
 
         config = ProblemConfig(**init)
         if config.archive:
             archive_path: str = os.path.join(dmanager.root_path, config.archive)
             if not os.path.exists(archive_path):
-                raise InvalidInitException(
+                raise InvalidInitError(
                     "archive file `%s` doesn't exist" % (archive_path,)
                 )
 
             try:
                 dmanager.archive = zipfile.ZipFile(archive_path)
             except zipfile.BadZipFile as e:
-                raise InvalidInitException.from_exception(e)
+                raise InvalidInitError.from_exception(e)
 
         return Problem(
             id=id,

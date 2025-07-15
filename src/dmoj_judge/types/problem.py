@@ -1,11 +1,11 @@
-from .config import (
+from ..config import (
     BaseConfig,
     ProblemConfig,
     TestCaseConfig,
     BatchedTestCaseConfig,
 )
-from .cptbox.utils import MmapableIO, MemoryIO
-from .errors import InvalidInitException
+from ..cptbox.utils import MmapableIO, MemoryIO
+from ..errors import InvalidInitError
 from dataclasses import dataclass
 from io import BufferedReader
 from typing import Any
@@ -84,7 +84,7 @@ class Problem:
 
         self.pretests_only = self.meta.get("pretests_only", False)
         if not self._resolve_testcases():
-            raise InvalidInitException("Problem `%s` has no testcases" % (id,))
+            raise InvalidInitError("Problem `%s` has no testcases" % (id,))
 
     # TODO: typing
     def _resolve_testcases(self) -> list[dict[str, Any]]:
@@ -114,17 +114,17 @@ class Problem:
                     isinstance(sub_case, BatchedTestCase)
                     for sub_case in sub_cases
                 ):
-                    raise InvalidInitException("Batches can't be nested")
+                    raise InvalidInitError("Batches can't be nested")
 
                 if any(
                     dep >= self._batch_counter for dep in config.dependencies
                 ):
-                    raise InvalidInitException(
+                    raise InvalidInitError(
                         "Dependencies depends on non-earlier batch"
                     )
 
                 if any(dep < 1 for dep in config.dependencies):
-                    raise InvalidInitException(
+                    raise InvalidInitError(
                         "Dependencies must be positive integers"
                     )
 

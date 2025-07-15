@@ -1,6 +1,6 @@
 from ..pm import PacketManager, Packet
 from ..types import Submission
-from ..problems import ProblemsManager
+from ..problems import ProblemManager
 from typing import Callable, Any
 from threading import Thread, Lock, Event
 from ..config import Config
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class Judge:
     pm: PacketManager
-    probm: ProblemsManager
+    probm: ProblemManager
 
     config: Config
     report_callbacks: list[Callable[[], tuple[str, Any]]]
@@ -28,7 +28,7 @@ class Judge:
     _receiver_handle: Thread | None
 
     def __init__(
-        self, config: Config, pm: PacketManager, probm: ProblemsManager
+        self, config: Config, pm: PacketManager, probm: ProblemManager
     ) -> None:
         self.pm = pm
         self.probm = probm

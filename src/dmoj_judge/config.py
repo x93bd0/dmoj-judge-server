@@ -5,33 +5,19 @@ import logging
 
 
 class BaseConfig:
-    pass
+    def load_dict(self, base: dict[str, Any]) -> None:
+        for key, value in base.items():
+            try:
+                cls_value: Any | BaseConfig = getattr(self, key)
+            except AttributeError:
+                raise AttributeError(
+                    f"Config class `{type(self).__name__}` doesn't allow the `{key}` field"
+                )
 
-
-# TODO: Consider adding a root logger property for doing root_logger.getChild('pkg')
-# TODO: Implement type checker
-# TODO: Add API flags
-@dataclass
-class Config(BaseConfig):
-    server_host: str
-    server_port: int
-    judge_name: str
-    judge_key: str
-
-    log_file: str | None = None
-    log_level: int = logging.INFO
-
-    only_executors: list[str] | None = None
-    exclude_executors: list[str] | None = None
-
-    # TODO: Add command argument for populating this
-    problem_storage_globs: list[str] | None = None
-
-    # Flags
-    ansi: bool = True
-    do_self_tests: bool = True
-    ssl_enabled: bool = False
-    watchdog: bool = True
+            if isinstance(cls_value, BaseConfig) and isinstance(value, dict):
+                cls_value.load_dict(value)
+            else:
+                setattr(self, key, value)
 
 
 # TODO: Maybe refactor this as PerExecutorConfig rather than AllExecutorsConfig?
@@ -60,11 +46,12 @@ class ExecutorConfig(BaseConfig):
 #         intended.
 @dataclass
 class ProblemConfig(BaseConfig):
-    # TODO: Add checker field
     # TODO: Find a more "elegant" way of passing down the grader configuraiton
     archive: str | None = None
     grader: str = BuiltInGraders.STANDARD.value
     grader_config: dict[str, Any] = field(default_factory=dict)
+
+    unbuffered: bool = False
 
     # TODO: Couldn't this be replaced by a more sophisticated test case logic?
     #        (dunno, just ideas)
@@ -90,6 +77,12 @@ class ProblemConfig(BaseConfig):
 
 
 @dataclass
+class GraderManagerConfig(BaseConfig):
+    include_builtin: bool = True
+    external: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
 class BatchedTestCaseConfig(BaseConfig):
     batched: list[dict[str, Any]]
     points: int = 0
@@ -103,3 +96,31 @@ class TestCaseConfig(BaseConfig):
     points: int = 0
     output_prefix_length: int = 0
     has_binary_data: bool = False
+
+
+# TODO: Consider adding a root logger property for doing root_logger.getChild('pkg')
+# TODO: Implement type checker
+# TODO: Add API flags
+@dataclass
+class Config(BaseConfig):
+    server_host: str
+    server_port: int
+    judge_name: str
+    judge_key: str
+
+    log_file: str | None = None
+    log_level: int = logging.INFO
+
+    only_executors: list[str] | None = None
+    exclude_executors: list[str] | None = None
+
+    # TODO: Add command argument for populating this
+    problem_storage_globs: list[str] | None = None
+
+    # Flags
+    ansi: bool = True
+    do_self_tests: bool = True
+    ssl_enabled: bool = False
+    watchdog: bool = True
+
+    graders: GraderManagerConfig = field(default_factory=GraderManagerConfig)

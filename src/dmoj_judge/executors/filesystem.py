@@ -16,7 +16,7 @@ class Filesystem:
     write: list[FilesystemAccessRule]
 
     @staticmethod
-    def default() -> Filesystem:
+    def default() -> "Filesystem":
         usr_dir: list[FilesystemAccessRule]
         if os.path.isdir("/usr/home"):
             usr_dir = [
@@ -94,5 +94,5 @@ class Filesystem:
         return Filesystem(base_fs, write_fs)
 
     @staticmethod
-    def from_config(config: Any) -> Filesystem:
+    def from_config(config: Any) -> "Filesystem":
         raise NotImplementedError("Filesystem.from_config")

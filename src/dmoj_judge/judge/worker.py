@@ -1,8 +1,7 @@
+from ..types import Submission, Problem
 from multiprocessing.connection import Connection
 from multiprocessing import Process, Pipe
 from typing import Generator, Any
-from ..types import Submission
-from ..problem import Problem
 from threading import Thread
 from enum import Enum, auto
 import traceback

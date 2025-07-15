@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-dmoj-cli = "dmoj_judge:cli.main"
+dmoj-cli = "dmoj_judge.commands:cli.main"
 
 [project.urls]
 Homepage = "https://github.com/x93bd0/dmoj-judge-server"

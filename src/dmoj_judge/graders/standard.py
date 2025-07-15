@@ -1,6 +1,6 @@
 from ..executors import BaseExecutor
+from ..types import TestCase, Result
 from .base import BaseGrader
-from ..types import TestCase
 
 
 class StandardGrader(BaseGrader):

@@ -1,8 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from ..types import Result, Problem, TestCase
 from ..executors.base import BaseExecutor
 from ..cptbox import TracedPopen
-from ..problem import Problem, TestCase
-from ..types import Result
+from abc import ABCMeta, abstractmethod
 
 
 class BaseGrader(ABCMeta):
@@ -20,6 +19,7 @@ class BaseGrader(ABCMeta):
         self._abort_requested = False
         self._current_process = None
 
+    # TODO: TestCase or BaseTestCase?
     @abstractmethod
     def grade(self, case: TestCase) -> Result:
         raise NotImplementedError
