@@ -83,6 +83,14 @@ class GraderManagerConfig(BaseConfig):
 
 
 @dataclass
+class ExecutorManagerConfig(BaseConfig):
+    include_builtin: bool = True
+    builtin_whitelist: list[str] | None = None
+    builtin_blacklist: list[str] | None = None
+    external: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
 class BatchedTestCaseConfig(BaseConfig):
     batched: list[dict[str, Any]]
     points: int = 0
@@ -124,3 +132,6 @@ class Config(BaseConfig):
     watchdog: bool = True
 
     graders: GraderManagerConfig = field(default_factory=GraderManagerConfig)
+    executors: ExecutorManagerConfig = field(
+        default_factory=ExecutorManagerConfig
+    )

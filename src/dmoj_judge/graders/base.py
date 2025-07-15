@@ -1,5 +1,5 @@
+from ..executors import BaseExecutor, ExecutorManager
 from ..types import Result, Problem, TestCase
-from ..executors.base import BaseExecutor
 from ..cptbox import TracedPopen
 from abc import ABCMeta, abstractmethod
 
@@ -11,7 +11,13 @@ class BaseGrader(ABCMeta):
     executor: BaseExecutor
     _current_process: TracedPopen | None
 
-    def __init__(self, source: bytes, language: str, problem: Problem) -> None:
+    def __init__(
+        self,
+        execm: ExecutorManager,
+        problem: Problem,
+        language: str,
+        source: bytes,
+    ) -> None:
         self.source = source
         self.language = language
         self.problem = problem

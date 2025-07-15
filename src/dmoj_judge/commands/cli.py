@@ -1,4 +1,5 @@
 from ..utils.builtin_int_patch import install as install_int_patch
+from ..executors import ExecutorManager
 from ..problems import ProblemManager
 from ..graders import GraderManager
 from ..pm import PacketManager
@@ -180,7 +181,8 @@ def main() -> None:
     )
 
     # TODO: setproctitle
-    graders = GraderManager(config.graders)
+    execm = ExecutorManager(config.executors)
+    graderm = GraderManager(config.graders)
     probm = ProblemManager(config)
 
     pm = PacketManager(config)
